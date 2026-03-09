@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace IMS.UseCases.PluginInterfaces
 {
-    internal interface IInventoryRepository
+    public interface IInventoryRepository
     {
         Task<IEnumerable<Inventory>> GetInventoriesByNameAsync(string name);
     }
