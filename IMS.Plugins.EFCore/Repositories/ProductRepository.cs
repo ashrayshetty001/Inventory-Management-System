@@ -1,49 +1,54 @@
 ﻿using IMS.CoreBusiness;
 using IMS.UseCases.PluginInterfaces;
-using IMS.WebApp.Data;
-using IMS.WebApp.Models;
+using IMS.Plugins.EFCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace IMS.Plugins.EFCore.Repositories
 {
-    public class ProductRepository : IProductRepository
+    // Use Inventory (core model) and IMSContext (EF bridge) to match the rest of the solution.
+    public class InventoryRepository : IInventoryRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IMSContext _context;
 
-        public ProductRepository(ApplicationDbContext context)
+        public InventoryRepository(IMSContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetProductsAsync()
+        public async Task<IEnumerable<Inventory>> GetInventoriesByNameAsync(string name)
         {
-            return await _context.Products.ToListAsync();
+            if (string.IsNullOrEmpty(name))
+                return await _context.Inventories.ToListAsync();
+
+            return await _context.Inventories
+                .Where(x => EF.Functions.Like(x.InventoryName, $"%{name}%"))
+                .ToListAsync();
         }
 
-        public async Task<Product?> GetProductByIdAsync(int id)
+        // Optional additional CRUD methods that operate on Inventory
+        public async Task<Inventory?> GetInventoryByIdAsync(int id)
         {
-            return await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Inventories.FirstOrDefaultAsync(x => x.InventoryId == id);
         }
 
-        public async Task AddProductAsync(Product product)
+        public async Task AddInventoryAsync(Inventory inventory)
         {
-            _context.Products.Add(product);
+            _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateProductAsync(Product product)
+        public async Task UpdateInventoryAsync(Inventory inventory)
         {
-            _context.Products.Update(product);
+            _context.Inventories.Update(inventory);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteProductAsync(int id)
+        public async Task DeleteInventoryAsync(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-
-            if (product != null)
+            var inventory = await _context.Inventories.FindAsync(id);
+            if (inventory != null)
             {
-                _context.Products.Remove(product);
+                _context.Inventories.Remove(inventory);
                 await _context.SaveChangesAsync();
             }
         }

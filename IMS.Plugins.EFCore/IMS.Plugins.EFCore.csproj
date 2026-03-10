@@ -21,4 +21,8 @@
     <ProjectReference Include="..\IMS.WebApp\IMS.WebApp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
 </Project>
