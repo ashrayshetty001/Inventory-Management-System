@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IMS.CoreBusiness\IMS.CoreBusiness.csproj" />
     <ProjectReference Include="..\IMS.UseCases\IMS.UseCases.csproj" />
+    <ProjectReference Include="..\IMS.Plugins.InMemory\IMS.Plugins.InMemory.csproj" />
   </ItemGroup>
 
   <ItemGroup>

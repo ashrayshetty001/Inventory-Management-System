@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IMS.Plugins.EFCore.Repositories
 {
-    // Use Inventory (core model) and IMSContext (EF bridge) to match the rest of the solution.
+    
     public class InventoryRepository : IInventoryRepository
     {
         private readonly IMSContext _context;

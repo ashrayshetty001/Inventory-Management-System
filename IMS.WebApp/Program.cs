@@ -6,49 +6,53 @@ using IMS.UseCases.Inventories;
 using IMS.UseCases.PluginInterfaces;
 using IMS.WebApp.Components;
 using IMS.WebApp.Data;
-
-using IMS.UseCases.PluginInterfaces;
 using IMS.Plugins.InMemory;
-using Microsoft.EntityFrameworkCore;
+using IMS.Plugins.EFCore.Repositories;
 
 
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorComponents();
-
-// Configure EF Core + Identity
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+public partial class Program
 {
-    options.SignIn.RequireConfirmedAccount = false;
-})
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IInventoryRepository, InventoyRepository>();
-builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNameUseCase>();
+        // Add services to the container.
+        builder.Services.AddRazorComponents();
 
-var app = builder.Build();
+        // Configure EF Core + Identity
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+        builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = false;
+        })
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        builder.Services.AddSingleton<IInventoryRepository, InventoryRepository>();
+        builder.Services.AddTransient<IViewInventoriesByNameUseCase, ViewInventoriesByNameUseCase>();
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+        app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+        app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.UseAntiforgery();
+
+        app.MapStaticAssets();
+        app.MapRazorComponents<App>();
+
+        app.Run();
+    }
 }
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseAntiforgery();
-
-app.MapStaticAssets();
-app.MapRazorComponents<App>();
-
-app.Run();
